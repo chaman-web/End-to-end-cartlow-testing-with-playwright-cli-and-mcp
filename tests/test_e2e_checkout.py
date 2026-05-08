@@ -5,6 +5,8 @@ EMAIL     = "muhammad.akmal@cartlow.com"
 PASSWORD  = "Test!123"
 SEARCH    = "iphone"
 
+COUPON        = "welcome10"
+
 CHECKOUT_CARD = "4242424242424242"
 PAYMOB_CARD   = "5123456789012346"
 EXPIRY        = "1133"       # typed as digits; field auto-formats to 11/33
@@ -34,6 +36,49 @@ def login(page: Page):
     page.locator("button:has-text('Sign In')").first.click()
     page.wait_for_timeout(6000)
     print(f"✅ Logged in — {page.url}")
+
+
+def apply_coupon(page: Page):
+    """Enter coupon 'welcome10', click Apply, verify success or log error."""
+    # Use JS to find the first visible coupon input and fill it
+    page.evaluate(f"""
+        () => {{
+            const inputs = [...document.querySelectorAll("input[name='coupon_code']")];
+            const inp = inputs.find(el => el.offsetParent !== null) || inputs[0];
+            if (inp) {{
+                inp.scrollIntoView({{block: 'center'}});
+                inp.value = '{COUPON}';
+                inp.dispatchEvent(new Event('input', {{bubbles: true}}));
+                inp.dispatchEvent(new Event('change', {{bubbles: true}}));
+            }}
+        }}
+    """)
+    page.wait_for_timeout(1000)
+
+    # Click the Apply button next to the coupon input
+    page.evaluate("""
+        () => {
+            const btns = [...document.querySelectorAll('button')];
+            const apply = btns.find(b => b.innerText.trim() === 'Apply' && b.offsetParent !== null);
+            if (apply) apply.click();
+        }
+    """)
+    page.wait_for_timeout(4000)
+
+    # Check success: green tick appears OR discount row visible in summary
+    success = (
+        page.locator("svg.text-green-600").first.is_visible()
+        or "discount" in page.locator("body").inner_text().lower()
+    )
+
+    if success:
+        print(f"✅ Coupon '{COUPON}' applied — discount reflected in order summary")
+    else:
+        err_el = page.locator("p.text-red-500").first
+        if err_el.is_visible():
+            print(f"❌ Coupon '{COUPON}' NOT applied — Error: {err_el.inner_text().strip()}")
+        else:
+            print(f"❌ Coupon '{COUPON}' NOT applied — no error message shown")
 
 
 def fill_paymob(page: Page):
@@ -195,6 +240,9 @@ def test_e2e_checkout(page: Page):
     assert "checkout" in page.url, f"Checkout not loaded: {page.url}"
     print(f"✅ Checkout — {page.url}")
 
+    # 6b. Apply coupon
+    apply_coupon(page)
+
     # 7. Place Order
     place = page.locator("button:has-text('Place Order')").first
     place.wait_for(state="visible", timeout=15000)
@@ -242,61 +290,65 @@ def test_e2e_checkout(page: Page):
         except Exception:
             continue
 
-    # 10. Bank authorization modal (may appear for 3DS) — enter "Checkout1!"
-    page.wait_for_timeout(5000)
+    # 10. Handle 3DS / bank authorization (Paymob or Checkout.com)
+    page.wait_for_timeout(8000)
     print(f"  URL after Pay: {page.url}")
 
-    # If already redirected to success page, skip auth
-    if "success" in page.url.lower() or "order" in page.url.lower() and "stage.cartlow" in page.url.lower():
-        print("  No auth modal needed — already on success/order page")
-    else:
-        # Look for authorization input in page or any frame (up to 30s)
-        auth_filled = False
-        for _ in range(6):
-            all_inputs = list(page.query_selector_all("input"))
-            for frame in page.frames:
-                try:
-                    all_inputs += list(frame.query_selector_all("input"))
-                except Exception:
-                    pass
+    # Wait up to 60s for either a Cartlow redirect or an auth input to appear
+    auth_filled = False
+    for _ in range(12):
+        current_url = page.url
+        if "stage.cartlow.com" in current_url:
+            print("  No auth needed — already redirected to Cartlow")
+            break
 
-            for inp in all_inputs:
-                try:
-                    if not inp.is_visible():
+        # Search for a password/OTP input across all frames
+        for frame in page.frames:
+            try:
+                for inp in frame.query_selector_all("input"):
+                    try:
+                        if not inp.is_visible():
+                            continue
+                        t  = (inp.get_attribute("type") or "").lower()
+                        ph = (inp.get_attribute("placeholder") or "").lower()
+                        nm = (inp.get_attribute("name") or "").lower()
+                        if t == "password" or any(k in ph + nm for k in ["password", "code", "auth", "otp"]):
+                            inp.fill(BANK_PASSWORD)
+                            auth_filled = True
+                            print(f"  Auth input filled (frame: {frame.url[:60]})")
+                            break
+                    except Exception:
                         continue
-                    t  = (inp.get_attribute("type") or "").lower()
-                    ph = (inp.get_attribute("placeholder") or "").lower()
-                    nm = (inp.get_attribute("name") or "").lower()
-                    if t == "password" or any(k in ph+nm for k in ["password", "code", "auth"]):
-                        inp.fill(BANK_PASSWORD)
-                        auth_filled = True
-                        print("  Auth password entered")
-                        break
-                except Exception:
-                    continue
-
-            if auth_filled:
-                break
-            page.wait_for_timeout(5000)
+                if auth_filled:
+                    break
+            except Exception:
+                continue
 
         if auth_filled:
-            # Submit authorization
             page.wait_for_timeout(1000)
-            for btn_text in ["Continue", "Submit", "Authorize", "Confirm", "OK", "Proceed"]:
-                for btn in page.locator(f"button:has-text('{btn_text}')").all():
-                    if btn.is_visible():
-                        btn.click()
-                        print(f"  Auth submitted via: {btn_text}")
-                        break
-                else:
-                    continue
-                break
-            else:
+            # Try clicking a submit/continue button
+            submitted = False
+            for label in ["Continue", "Submit", "Authorize", "Confirm", "OK", "Proceed", "Pay"]:
+                for frame in page.frames:
+                    try:
+                        btn = frame.locator(f"button:has-text('{label}')").first
+                        if btn.is_visible():
+                            btn.click()
+                            print(f"  Auth submitted via: {label}")
+                            submitted = True
+                            break
+                    except Exception:
+                        continue
+                if submitted:
+                    break
+            if not submitted:
                 page.keyboard.press("Enter")
                 print("  Auth submitted via Enter")
-
-            page.wait_for_timeout(8000)
+            page.wait_for_timeout(10000)
             print(f"  URL after auth: {page.url}")
+            break
+
+        page.wait_for_timeout(5000)
 
     # 11. Wait for redirect to Cartlow success/order page
     page.wait_for_url("**/stage.cartlow.com/**", timeout=45000)

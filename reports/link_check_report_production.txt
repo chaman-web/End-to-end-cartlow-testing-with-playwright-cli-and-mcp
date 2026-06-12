@@ -1,0 +1,79 @@
+Link Check Report — https://www.cartlow.com/uae/en
+Total: 73 | OK: 9 | Broken: 64
+
+=== BROKEN LINKS ===
+[403] NAV: https://www.cartlow.com/uae/en → https://www.cartlow.com/uae/en
+[403] NAV: العربية → https://www.cartlow.com/set-country-locale?lang=ar&country=uae
+[403] NAV: Sell Your Device → https://tradein-buyback.cartlow.com/
+[403] NAV: Mobiles → https://cartlow.com/uae/en/search?criteria_id=543
+[403] NAV: Original Perfumes 🔥 → https://www.cartlow.com/uae/en/secondary/home/perfumes
+[403] NAV: Gift Cards → https://www.cartlow.com/uae/en/secondary/home/gift-cards
+[403] NAV: Tablets → https://www.cartlow.com/uae/en/tablets
+[403] NAV: Smartwatches → https://www.cartlow.com/uae/en/smartwatches
+[403] NAV: Laptops → https://www.cartlow.com/uae/en/laptops
+[403] NAV: Watches → https://www.cartlow.com/uae/en/watches
+[403] NAV: Electronic Accessories → https://www.cartlow.com/uae/en/accessories
+[403] NAV: Beauty → https://www.cartlow.com/uae/en/beauty
+[403] NAV: Sports & Play Gear → https://www.cartlow.com/uae/en/sports
+[403] NAV: Baby → https://cartlow.com/uae/en/baby
+[403] NAV: Home Appliances → https://www.cartlow.com/uae/en/search?criteria_id=973
+[403] FOOTER: See All → https://www.cartlow.com/uae/en/search?query=apple+devices
+[403] FOOTER: iPhones → https://www.cartlow.com/uae/en/search?query=apple+iphone
+[403] FOOTER: Apple Watches → https://www.cartlow.com/uae/en/search?query=apple+watches&categories=12019&brand=39
+[403] FOOTER: Macbook → https://www.cartlow.com/uae/en/search?query=macbook&brand=39
+[403] FOOTER: iPads → https://www.cartlow.com/uae/en/search?query=ipads&brand=39
+[403] FOOTER: iMac → https://www.cartlow.com/uae/en/search?query=imac&brand=39
+[403] FOOTER: See All → https://www.cartlow.com/uae/en/search?criteria_id=10
+[403] FOOTER: Binance → https://www.cartlow.com/uae/en/search?query=binance+gift+cards&brand=5095
+[403] FOOTER: Games → https://www.cartlow.com/uae/en/search?query=binance+gift+cards&brand=1742%2C5091%2C5186%2C2013%2C1392%2C5094%2C248=5095
+[403] FOOTER: Online Shopping → https://www.cartlow.com/uae/en/search?criteria_id=943
+[403] FOOTER: Telcos → https://www.cartlow.com/uae/en/search?criteria_id=942
+[403] FOOTER: Digital Entertainment → https://www.cartlow.com/uae/en/search?criteria_id=466
+[403] FOOTER: See all → https://www.cartlow.com/uae/en/search?criteria_id=16
+[403] FOOTER: Dell → https://www.cartlow.com/uae/en/search?query=Dell+Laptops
+[403] FOOTER: Lenovo → https://www.cartlow.com/uae/en/search?query=lenovo+Laptops
+[403] FOOTER: HP → https://www.cartlow.com/uae/en/search?query=HP+Laptops
+[403] FOOTER: Acer → https://www.cartlow.com/uae/en/search?query=acer+Laptops
+[403] FOOTER: Microsoft → https://www.cartlow.com/uae/en/search?query=mo%5Cicrosoft+Laptops
+[403] FOOTER: See All → https://www.cartlow.com/uae/en/search?query=gaming
+[403] FOOTER: Gaming PCs → https://www.cartlow.com/uae/en/search?query=Gaming+desktop+&conditions=32
+[403] FOOTER: Gaming Monitors → https://www.cartlow.com/uae/en/search?query=Gaming+Monitor&categories=16002
+[403] FOOTER: Consoles → https://www.cartlow.com/uae/en/search?query=Consoles
+[403] FOOTER: Headset → https://www.cartlow.com/uae/en/search?query=headset
+[403] FOOTER: Gaming Keyboard & Mice → https://www.cartlow.com/uae/en/search?query=keyboard+and+mouse+gaming&conditions=32&categories=16010
+[403] FOOTER: About Company → https://www.cartlow.com/uae/en/page/about-us
+[403] FOOTER: Cartlow’s Journey → https://www.cartlow.com/uae/en/page/our-story
+[403] FOOTER: Careers → https://www.cartlow.com/uae/en/page/careers
+[403] FOOTER: https://twitter.com/CartlowUAE?t=T7E2shWf2JTql15OwSvmNw&s=08 → https://twitter.com/CartlowUAE?t=T7E2shWf2JTql15OwSvmNw&s=08
+[403] FOOTER: FAQs → https://www.cartlow.com/uae/en/page/faqs
+[403] FOOTER: Complaints & Suggestions → https://www.cartlow.com/uae/en/page/complaints-and-suggestions
+[403] FOOTER: Track Your Order → https://www.cartlow.com/uae/en/page/track-order
+[403] FOOTER: Cartlow Wholesale → https://wholesale.cartlow.com/
+[403] FOOTER: Shipping → https://www.cartlow.com/uae/en/page/shipping-policy
+[403] FOOTER: Payments → https://www.cartlow.com/uae/en/page/payment-policy
+[403] FOOTER: Marketing Solutions → https://www.cartlow.com/uae/en/page/marketing-tools
+[403] FOOTER: Strategic & Logistical Services → https://www.cartlow.com/uae/en/page/strategic-and-logistical-services-tools
+[403] FOOTER: Sell with Cartlow → https://www.cartlow.com/seller
+[403] FOOTER: Why Expand with Cartlow? → https://www.cartlow.com/uae/en/page/why-expand-with-cartlow
+[403] FOOTER: Pricing → https://www.cartlow.com/uae/en/page/pricing
+[403] FOOTER: Advertise Your Products → https://www.cartlow.com/uae/en/page/advertise-your-products
+[403] FOOTER: Terms & Conditions → https://www.cartlow.com/uae/en/page/terms-conditions
+[403] FOOTER: Privacy Policy → https://www.cartlow.com/uae/en/page/privacy-policy
+[403] FOOTER: Refund Policy → https://www.cartlow.com/uae/en/page/refund-policy
+[403] FOOTER: Return Policy → https://www.cartlow.com/uae/en/page/return-policy
+[403] FOOTER: Warranty Policy → https://www.cartlow.com/uae/en/page/warranty-policy
+[403] FOOTER: Cashback Policy → https://www.cartlow.com/uae/en/page/cashback-policy
+[403] FOOTER: User Data Rights → https://www.cartlow.com/uae/en/page/user-data-rights
+[403] FOOTER: Third Party Services Disclosure → https://www.cartlow.com/uae/en/page/third-party-services-disclosure
+[403] FOOTER: /uae/en/ → https://www.cartlow.com/uae/en/
+
+=== OK LINKS ===
+[200] FOOTER: https://www.facebook.com/cartlowuae?mibextid=ZbWKwL → https://www.facebook.com/cartlowuae?mibextid=ZbWKwL
+[200] FOOTER: https://instagram.com/cartlowuae?igshid=MzRlODBiNWFlZA== → https://instagram.com/cartlowuae?igshid=MzRlODBiNWFlZA==
+[200] FOOTER: https://linkedin.com/company/cartlow → https://linkedin.com/company/cartlow
+[200] FOOTER: https://www.tiktok.com/@cartlowofficial → https://www.tiktok.com/@cartlowofficial
+[200] FOOTER: https://play.google.com/store/apps/details?id=com.cartlow.an → https://play.google.com/store/apps/details?id=com.cartlow.android&hl=en
+[200] FOOTER: https://apps.apple.com/ae/app/cartlow/id1455009311 → https://apps.apple.com/ae/app/cartlow/id1455009311
+[200] FOOTER: Contact Us → https://www.cartlow.com/contact-us
+[200] FOOTER: Mobocheck → https://mobocheck.com/
+[200] FOOTER: Ardroid → https://www.ardroid.com/

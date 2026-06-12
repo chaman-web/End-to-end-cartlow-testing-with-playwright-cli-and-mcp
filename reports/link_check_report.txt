@@ -1,0 +1,80 @@
+Link Check Report — https://stage.cartlow.com/uae/en
+Total: 74 | OK: 68 | Broken: 6
+
+=== BROKEN LINKS ===
+[403] NAV: Sell Your Device → https://tradein-buyback.cartlow.com/
+[403] NAV: Original Perfumes 🔥 → https://www.cartlow.com/uae/en/secondary/home/perfumes
+[403] NAV: Baby → https://cartlow.com/uae/en/baby
+[403] FOOTER: https://twitter.com/CartlowUAE?t=T7E2shWf2JTql15Ow → https://twitter.com/CartlowUAE?t=T7E2shWf2JTql15OwSvmNw&s=08
+[0] FOOTER: +971 (04) 5616814 → https://stage.cartlow.comcallto:+971045616814
+[403] FOOTER: Cartlow Wholesale → https://wholesale.cartlow.com/
+
+=== OK LINKS ===
+[200] NAV: https://stage.cartlow.com/uae/en → https://stage.cartlow.com/uae/en
+[200] NAV: العربية → https://stage.cartlow.com/set-country-locale?lang=ar&country=uae
+[200] NAV: menu1 → https://stage.cartlow.com/uae/en/search?criteria_id=18
+[200] NAV: Mobiles → https://stage.cartlow.com/uae/en/search?criteria_id=543
+[200] NAV: Tablets → https://stage.cartlow.com/uae/en/tablets
+[200] NAV: Smartwatches → https://stage.cartlow.com/uae/en/smartwatches
+[200] NAV: Laptops → https://stage.cartlow.com/uae/en/laptops
+[200] NAV: Watches → https://stage.cartlow.com/uae/en/watches
+[200] NAV: Electronic Accessories → https://stage.cartlow.com/uae/en/accessories
+[200] NAV: Beauty → https://stage.cartlow.com/uae/en/beauty
+[200] NAV: Sports & Play Gear → https://stage.cartlow.com/uae/en/sports
+[200] NAV: Home Appliances → https://stage.cartlow.com/uae/en/search?criteria_id=973
+[200] FOOTER: See All → https://stage.cartlow.com/uae/en/search?query=apple+devices
+[200] FOOTER: iPhones → https://stage.cartlow.com/uae/en/search?query=apple+iphone
+[200] FOOTER: Apple Watches → https://stage.cartlow.com/uae/en/search?query=apple+watches&categories=12019&brand=39
+[200] FOOTER: Macbook → https://stage.cartlow.com/uae/en/search?query=macbook&brand=39
+[200] FOOTER: iPads → https://stage.cartlow.com/uae/en/search?query=ipads&brand=39
+[200] FOOTER: iMac → https://stage.cartlow.com/uae/en/search?query=imac&brand=39
+[200] FOOTER: See All → https://stage.cartlow.com/uae/en/search?query=gift+cards&categories=64014%2C64016%2C64018%2C64013%2C64015%2C64011%2C64012%2C64001%2C64017%2C64021
+[200] FOOTER: Binance → https://stage.cartlow.com/uae/en/search?query=binance+gift+cards&brand=5095
+[200] FOOTER: Games → https://stage.cartlow.com/uae/en/search?query=binance+gift+cards&brand=1742%2C5091%2C5186%2C2013%2C1392%2C5094%2C248=5095
+[200] FOOTER: Online Shopping → https://stage.cartlow.com/uae/en/search?criteria_id=943
+[200] FOOTER: Telcos → https://stage.cartlow.com/uae/en/search?criteria_id=942
+[200] FOOTER: Digital Entertainment → https://stage.cartlow.com/uae/en/search?criteria_id=466
+[200] FOOTER: See all → https://stage.cartlow.com/uae/en/search?criteria_id=16
+[200] FOOTER: Dell → https://stage.cartlow.com/uae/en/search?query=Dell+Laptops
+[200] FOOTER: Lenovo → https://stage.cartlow.com/uae/en/search?query=lenovo+Laptops
+[200] FOOTER: HP → https://stage.cartlow.com/uae/en/search?query=HP+Laptops
+[200] FOOTER: Acer → https://stage.cartlow.com/uae/en/search?query=acer+Laptops
+[200] FOOTER: Microsoft → https://stage.cartlow.com/uae/en/search?query=mo%5Cicrosoft+Laptops
+[200] FOOTER: See All → https://stage.cartlow.com/uae/en/search?query=gaming
+[200] FOOTER: Gaming PCs → https://stage.cartlow.com/uae/en/search?query=Gaming+desktop+&conditions=32
+[200] FOOTER: Gaming Monitors → https://stage.cartlow.com/uae/en/search?query=Gaming+Monitor&categories=16002
+[200] FOOTER: Consoles → https://stage.cartlow.com/uae/en/search?query=Consoles
+[200] FOOTER: Headset → https://stage.cartlow.com/uae/en/search?query=headset
+[200] FOOTER: Gaming Keyboard & Mice → https://stage.cartlow.com/uae/en/search?query=keyboard+and+mouse+gaming&conditions=32&categories=16010
+[200] FOOTER: About Company → https://stage.cartlow.com/uae/en/page/about-us
+[200] FOOTER: Cartlow’s Journey → https://stage.cartlow.com/uae/en/page/our-story
+[200] FOOTER: Careers → https://stage.cartlow.com/uae/en/page/careers
+[200] FOOTER: https://www.facebook.com/cartlowuae?mibextid=ZbWKw → https://www.facebook.com/cartlowuae?mibextid=ZbWKwL
+[200] FOOTER: https://instagram.com/cartlowuae?igshid=MzRlODBiNW → https://instagram.com/cartlowuae?igshid=MzRlODBiNWFlZA==
+[200] FOOTER: https://linkedin.com/company/cartlow → https://linkedin.com/company/cartlow
+[200] FOOTER: https://www.tiktok.com/@cartlowofficial → https://www.tiktok.com/@cartlowofficial
+[200] FOOTER: https://play.google.com/store/apps/details?id=com. → https://play.google.com/store/apps/details?id=com.cartlow.android&hl=en
+[200] FOOTER: https://apps.apple.com/ae/app/cartlow/id1455009311 → https://apps.apple.com/ae/app/cartlow/id1455009311
+[200] FOOTER: Contact Us → https://stage.cartlow.com/contact-us
+[200] FOOTER: FAQs → https://stage.cartlow.com/uae/en/page/faqs
+[200] FOOTER: Complaints & Suggestions → https://stage.cartlow.com/uae/en/page/complaints-and-suggestions
+[200] FOOTER: Track Your Order → https://stage.cartlow.com/uae/en/page/track-order
+[200] FOOTER: Mobocheck → https://mobocheck.com/
+[200] FOOTER: Ardroid → https://www.ardroid.com/
+[200] FOOTER: Shipping → https://stage.cartlow.com/uae/en/page/shipping-policy
+[200] FOOTER: Payments → https://stage.cartlow.com/uae/en/page/payment-policy
+[200] FOOTER: Marketing Solutions → https://stage.cartlow.com/uae/en/page/marketing-tools
+[200] FOOTER: Strategic & Logistical Services → https://stage.cartlow.com/uae/en/page/strategic-and-logistical-services-tools
+[200] FOOTER: Sell with Cartlow → https://stage.cartlow.com/seller
+[200] FOOTER: Why Expand with Cartlow? → https://stage.cartlow.com/uae/en/page/why-expand-with-cartlow
+[200] FOOTER: Pricing → https://stage.cartlow.com/uae/en/page/pricing
+[200] FOOTER: Advertise Your Products → https://stage.cartlow.com/uae/en/page/advertise-your-products
+[200] FOOTER: Terms & Conditions → https://stage.cartlow.com/uae/en/page/terms-conditions
+[200] FOOTER: Privacy Policy → https://stage.cartlow.com/uae/en/page/privacy-policy
+[200] FOOTER: Refund Policy → https://stage.cartlow.com/uae/en/page/refund-policy
+[200] FOOTER: Return Policy → https://stage.cartlow.com/uae/en/page/return-policy
+[200] FOOTER: Warranty Policy → https://stage.cartlow.com/uae/en/page/warranty-policy
+[200] FOOTER: Cashback Policy → https://stage.cartlow.com/uae/en/page/cashback-policy
+[200] FOOTER: User Data Rights → https://stage.cartlow.com/uae/en/page/user-data-rights
+[200] FOOTER: Third Party Services Disclosure → https://stage.cartlow.com/uae/en/page/third-party-services-disclosure
+[200] FOOTER: /uae/en/ → https://stage.cartlow.com/uae/en/

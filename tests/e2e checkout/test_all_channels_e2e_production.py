@@ -26,33 +26,81 @@ def login(page: Page):
         except Exception:
             page.wait_for_timeout(5000)
     page.wait_for_timeout(10000)
-    for _ in range(15):
+
+    # Close any open modals/popups before opening auth
+    for sel in [
+        "button[aria-label='Close download app modal']",
+        "button[aria-label='Close']",
+        "#customer-auth-modal button.close",
+    ]:
+        try:
+            btn = page.locator(sel).first
+            if btn.is_visible():
+                btn.click()
+                page.wait_for_timeout(500)
+        except: pass
+    page.keyboard.press("Escape")
+    page.wait_for_timeout(500)
+
+    # Open auth modal with retry + hard reload if needed
+    for attempt in range(3):
         try:
             page.evaluate("document.querySelector('#app').__vue_app__.config.globalProperties.$emitter.emit('open-customer-auth-modal')")
-            page.locator("#login-email").wait_for(state="visible", timeout=3000)
+            page.locator("#login-email").wait_for(state="visible", timeout=5000)
             page.wait_for_timeout(500)
             page.locator("#login-email").evaluate("el => el.focus()")
             if page.locator("#login-email").evaluate("el => document.activeElement === el"):
                 page.wait_for_timeout(300)
                 break
-        except: page.wait_for_timeout(1500)
+        except:
+            if attempt == 1:
+                # Hard reload and retry
+                print("  ⟳ Hard reload and retry login modal...")
+                page.goto(BASE_URL, wait_until="domcontentloaded", timeout=60000)
+                page.wait_for_timeout(8000)
+            page.wait_for_timeout(2000)
+
     page.locator("#login-email").fill(EMAIL)
     page.locator("#login-password").fill(PASSWORD)
     page.wait_for_timeout(500)
-    # Dismiss download app popup if blocking Sign In
+
+    # Dismiss app popup if blocking Sign In
     try:
         close = page.locator("button[aria-label='Close download app modal']")
         if close.is_visible():
             close.click()
             page.wait_for_timeout(500)
     except: pass
+
     page.locator("button:has-text('Sign In')").first.click()
     page.wait_for_timeout(6000)
+
+    # Wait for auth modal to close then navigate to homepage to clear overlays
+    try:
+        page.locator("#customer-auth-modal").wait_for(state="hidden", timeout=8000)
+    except: pass
+
+    # Navigate to homepage to fully clear any overlays/modals
+    page.goto(BASE_URL, wait_until="domcontentloaded", timeout=60000)
+    page.wait_for_timeout(5000)
+
+    # Close any popup that appeared
+    for sel in ["button[aria-label='Close download app modal']",
+                "button[aria-label='Close']",
+                "button[onclick*='close']"]:
+        try:
+            btn = page.locator(sel).first
+            if btn.is_visible():
+                btn.click()
+                page.wait_for_timeout(300)
+        except: pass
+
     print("✅ Logged in")
 
 
 def switch_channel(page: Page, channel: str):
-    page.locator("button:has-text('UAE')").first.click()
+    # Use JS click to bypass any overlay blocking the UAE button
+    page.evaluate("() => [...document.querySelectorAll('button')].find(b => b.innerText.trim() === 'UAE')?.click()")
     page.wait_for_timeout(1500)
     page.locator(f"span.cursor-pointer:has-text('{channel}')").first.click()
     page.wait_for_timeout(8000)
@@ -64,8 +112,12 @@ def switch_channel(page: Page, channel: str):
 
 def add_product_to_cart(page: Page, channel_url: str, search: str = "iphone"):
     page.goto(f"{channel_url}/search?query={search}", wait_until="domcontentloaded")
-    page.wait_for_timeout(8000)
-    page.wait_for_selector("a[href*='product-detail']", state="attached", timeout=20000)
+    page.wait_for_timeout(10000)
+    # Wait for product links — production uses product-detail pattern
+    try:
+        page.wait_for_selector("a[href*='product-detail']", state="attached", timeout=25000)
+    except:
+        page.wait_for_timeout(5000)  # extra wait for Cloudflare clearance
     products = list(dict.fromkeys(page.evaluate(
         "() => [...document.querySelectorAll('a[href*=product-detail]')].map(a => a.href)"
     )))
@@ -103,12 +155,26 @@ def add_product_to_cart(page: Page, channel_url: str, search: str = "iphone"):
 
 def go_to_checkout(page: Page, channel_url: str):
     page.goto(f"{channel_url}/checkout/cart", wait_until="domcontentloaded")
-    page.wait_for_timeout(5000)
-    links = page.locator("a[href*='checkout/onepage']")
-    if links.count() > 0:
-        links.last.click()
-    else:
+    page.wait_for_timeout(6000)
+    body = page.locator("body").inner_text()
+    if "don't have a product" in body.lower() or "empty" in body.lower():
+        # Cart empty — go directly to onepage
         page.goto(f"{channel_url}/checkout/onepage", wait_until="domcontentloaded")
+    else:
+        # Find checkout link with a valid bounding box
+        links = page.locator("a[href*='checkout/onepage']")
+        clicked = False
+        for i in range(links.count()):
+            try:
+                link = links.nth(i)
+                box = link.bounding_box()
+                if box and box['width'] > 0 and box['height'] > 0:
+                    link.click()
+                    clicked = True
+                    break
+            except: continue
+        if not clicked:
+            page.goto(f"{channel_url}/checkout/onepage", wait_until="domcontentloaded")
     page.wait_for_timeout(8000)
     assert "onepage" in page.url, f"Expected checkout, got: {page.url}"
     print(f"✅ Checkout — {page.url}")

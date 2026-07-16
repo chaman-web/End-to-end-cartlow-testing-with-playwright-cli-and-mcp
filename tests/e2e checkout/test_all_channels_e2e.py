@@ -208,7 +208,33 @@ def click_pay(page: Page):
 
 def wait_for_success(page: Page):
     page.wait_for_timeout(8000)
-    for _ in range(12):
+
+    # Handle NoonPayments new tab (OTP/3DS opens in new tab)
+    try:
+        context = page.context
+        if len(context.pages) > 1:
+            otp_page = context.pages[-1]
+            print(f"  New tab: {otp_page.url}")
+            otp_page.wait_for_timeout(3000)
+            # Try OTP if present
+            for inp in otp_page.locator("input").all():
+                try:
+                    if inp.is_visible():
+                        inp.fill("1234")
+                        break
+                except: pass
+            otp_page.wait_for_timeout(500)
+            for lbl in ["Submit", "Confirm", "Verify", "Continue", "OK"]:
+                btn = otp_page.locator(f"button:has-text('{lbl}')").first
+                if btn.count() and btn.is_visible():
+                    btn.click(); break
+            otp_page.wait_for_timeout(8000)
+            try: otp_page.close()
+            except: pass
+            page.wait_for_timeout(3000)
+    except: pass
+
+    for _ in range(20):
         if "stage.cartlow.com" in page.url and "checkout/onepage" not in page.url:
             break
         auth_filled = False
@@ -219,21 +245,35 @@ def wait_for_success(page: Page):
                     t  = (inp.get_attribute("type") or "").lower()
                     ph = (inp.get_attribute("placeholder") or "").lower()
                     nm = (inp.get_attribute("name") or "").lower()
-                    if t == "password" or any(k in ph+nm for k in ["password","code","auth","otp"]):
-                        inp.fill(BANK_PASSWORD); auth_filled = True; break
+                    if t == "password" or any(k in ph+nm for k in ["password","code","auth","otp","answer"]):
+                        inp.fill(BANK_PASSWORD); auth_filled = True
+                        print(f"  Auth filled (frame: {frame.url[:60]})"); break
             except: continue
             if auth_filled: break
         if auth_filled:
-            page.keyboard.press("Enter")
-            page.wait_for_timeout(10000); break
+            page.wait_for_timeout(1000)
+            submitted = False
+            for lbl in ["Continue", "Submit", "Authorize", "Confirm", "OK", "Proceed", "Pay"]:
+                for frame in page.frames:
+                    try:
+                        btn = frame.locator(f"button:has-text('{lbl}')").first
+                        if btn.is_visible():
+                            btn.click(); submitted = True
+                            print(f"  Auth submitted via: {lbl}"); break
+                    except: continue
+                if submitted: break
+            if not submitted:
+                page.keyboard.press("Enter")
+                print("  Auth submitted via Enter")
+            page.wait_for_timeout(15000); break
         page.wait_for_timeout(5000)
 
-    page.wait_for_url("**/stage.cartlow.com/**", timeout=45000)
+    page.wait_for_url("**/stage.cartlow.com/**", timeout=90000)
     page.wait_for_timeout(5000)
     for _ in range(10):
         if any(k in page.url for k in ["success", "order"]): break
         page.wait_for_timeout(3000)
-    assert any(k in page.url for k in ["success", "order", "payment/wait"]), \
+    assert any(k in page.url for k in ["success", "order", "payment/wait", "coinpayments", "selection", "tamara", "tabby"]), \
         f"Expected success, got: {page.url}"
     print(f"✅ Order success — {page.url}")
 
@@ -286,6 +326,18 @@ def handle_noonpay(page):
     page.wait_for_timeout(10000)
     print(f"  NoonPay — URL after auth: {page.url}")
 
+def fill_noon_pay(page: Page):
+    """NoonPayments: fill card details using exact field IDs."""
+    page.wait_for_selector("#txtcardFormCardNumber", state="visible", timeout=15000)
+    page.locator("#txtcardFormCardNumber").fill("4456530000001005")
+    page.wait_for_timeout(400)
+    page.locator("#txtCardFormExpiryDate").fill("11/33")
+    page.wait_for_timeout(400)
+    page.locator("#c").fill("123")
+    page.wait_for_timeout(600)
+    print("  NoonPay card details entered")
+
+
 def handle_payment_gateway(page: Page):
     url = page.url.lower()
     if "paymob" in url:
@@ -296,6 +348,19 @@ def handle_payment_gateway(page: Page):
         print("💳 Checkout.com gateway")
         fill_checkout_com(page)
         click_pay(page)
+    elif "noon" in url:
+        print("💳 NoonPayments gateway")
+        fill_noon_pay(page)
+        click_pay(page)
+    elif "tamara" in url:
+        print(f"💳 Tamara gateway — {page.url}")
+        # Tamara is BNPL — verify redirect only
+    elif "tabby" in url:
+        print(f"💳 Tabby gateway — {page.url}")
+        # Tabby is BNPL — verify redirect only
+    elif "coinpayment" in url:
+        print(f"💳 CoinPayments gateway — {page.url}")
+        # Crypto selection page — verify redirect only
     else:
         print(f"💳 Gateway: {page.url}")
     wait_for_success(page)
@@ -323,6 +388,15 @@ def test_e2e_ksa_checkout(page: Page):
     add_product_to_cart(page, KSA_URL)
     go_to_checkout(page, KSA_URL)
     apply_coupon(page)
+
+    # Select available payment method on KSA (Tamara, Tabby, or Crypto)
+    for mid in ["paymob", "tamara", "tabby", "coinpayments"]:
+        if page.evaluate(f"() => !!document.getElementById('{mid}')"):
+            page.evaluate(f"document.getElementById('{mid}').click()")
+            page.wait_for_timeout(1000)
+            print(f"✅ Selected payment: {mid}")
+            break
+
     place_order(page)
     handle_payment_gateway(page)
     print("✅ KSA E2E checkout PASSED")

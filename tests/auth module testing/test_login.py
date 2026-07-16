@@ -1,7 +1,7 @@
 import pytest
 from playwright.sync_api import Page
 
-BASE_URL = "https://stage.cartlow.com/uae/en"
+import os; BASE_URL = os.getenv("BASE_URL", "https://stage.cartlow.com/uae/en")
 VALID_EMAIL = "muhammad.akmal@cartlow.com"
 VALID_PASSWORD = "Test!123"
 

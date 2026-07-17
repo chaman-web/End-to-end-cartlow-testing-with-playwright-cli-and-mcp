@@ -5,23 +5,28 @@ pipeline {
         choice(
             name: 'TEST_SUITE',
             choices: [
-                'auth',
-                'e2e_staging',
-                'e2e_stage2',
-                'payment_methods',
-                'all'
+                'all',
+                'auth -- Login & Registration Tests',
+                'e2e_staging -- E2E Checkout (Stage)',
+                'e2e_stage2 -- E2E Checkout (Stage2)',
+                'e2e_intl -- E2E INTL Checkout',
+                'payment_uae -- Payment Methods UAE',
+                'payment_ksa -- Payment Methods KSA',
+                'payment_intl -- Payment Methods INTL',
+                'payment_methods -- All Payment Methods',
+                'nav_links -- Navigation Link Checker'
             ],
-            description: 'Which test suite to run'
+            description: 'Select which test suite to run'
         )
         choice(
             name: 'BROWSER',
-            choices: ['chromium', 'firefox', 'all'],
+            choices: ['chromium', 'firefox', 'chromium firefox'],
             description: 'Browser to run tests on'
         )
         choice(
             name: 'ENV',
             choices: ['staging', 'stage2'],
-            description: 'Environment to test against'
+            description: 'Environment: staging = stage.cartlow.com, stage2 = stage2.cartlow.com'
         )
     }
 
@@ -62,12 +67,13 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    def browserFlag = params.BROWSER == 'all'
+                    def suite = params.TEST_SUITE.split(' ')[0]  // take only the key part
+                    def browsers = params.BROWSER == 'chromium firefox'
                         ? '--browser chromium --browser firefox'
                         : "--browser ${params.BROWSER}"
 
                     def testPath = ''
-                    switch(params.TEST_SUITE) {
+                    switch(suite) {
                         case 'auth':
                             testPath = '"tests/auth module testing/test_login.py" "tests/auth module testing/test_registration_positive.py"'
                             break
@@ -77,10 +83,26 @@ pipeline {
                         case 'e2e_stage2':
                             testPath = '"tests/e2e checkout/test_all_channels_e2e_stage2.py"'
                             break
+                        case 'e2e_intl':
+                            testPath = '"tests/e2e checkout/test_e2e_intl_checkout.py"'
+                            break
+                        case 'payment_uae':
+                            testPath = '"tests/test payment method/test_payment_method_uae.py"'
+                            break
+                        case 'payment_ksa':
+                            testPath = '"tests/test payment method/test_payment_method_ksa.py"'
+                            break
+                        case 'payment_intl':
+                            testPath = '"tests/test payment method/test_payment_method_intl.py"'
+                            break
                         case 'payment_methods':
                             testPath = '"tests/test payment method"'
                             break
+                        case 'nav_links':
+                            testPath = '"tests/auth module testing/test_nav_links.py"'
+                            break
                         case 'all':
+                        default:
                             testPath = 'tests'
                             break
                     }
@@ -93,7 +115,7 @@ pipeline {
                         set DB_USER=${env.DB_USER}
                         set DB_PASS=${env.DB_PASS}
                         .venv\\Scripts\\pytest ${testPath} ^
-                            ${browserFlag} ^
+                            ${browsers} ^
                             -v ^
                             --tb=short ^
                             --html=reports/jenkins_report.html ^

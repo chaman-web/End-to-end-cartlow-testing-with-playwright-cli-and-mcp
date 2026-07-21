@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+
+  # ── Run all tests ─────────────────────────────────────────────────────────
+  playwright-tests:
+    build: .
+    container_name: cartlow-playwright
+    environment:
+      - BASE_URL=${BASE_URL:-https://stage.cartlow.com/uae/en}
+      - DB_HOST=209.38.211.128
+      - DB_PORT=3306
+      - DB_NAME=cartlow_dev
+      - DB_USER=sohaib
+      - DB_PASS=SoHeyhy@20ZZwaN@2023
+      - DISPLAY=:99
+    volumes:
+      - ./reports:/app/reports       # Reports saved to host machine
+      - ./tests:/app/tests           # Live test files (no rebuild needed)
+    command: >
+      python -m pytest tests/
+        -v
+        --tb=short
+        --html=reports/report.html
+        --self-contained-html
+        --junit-xml=reports/results.xml
+
+  # ── Run only auth tests ───────────────────────────────────────────────────
+  playwright-auth:
+    build: .
+    container_name: cartlow-auth
+    environment:
+      - BASE_URL=${BASE_URL:-https://stage.cartlow.com/uae/en}
+      - DB_HOST=209.38.211.128
+      - DB_PORT=3306
+      - DB_NAME=cartlow_dev
+      - DB_USER=sohaib
+      - DB_PASS=SoHeyhy@20ZZwaN@2023
+    volumes:
+      - ./reports:/app/reports
+    command: >
+      python -m pytest
+        "tests/auth module testing/test_login.py"
+        "tests/auth module testing/test_registration_positive.py"
+        -v --html=reports/auth_report.html --self-contained-html
+
+  # ── Run only E2E checkout tests ───────────────────────────────────────────
+  playwright-e2e:
+    build: .
+    container_name: cartlow-e2e
+    environment:
+      - BASE_URL=${BASE_URL:-https://stage.cartlow.com/uae/en}
+      - DB_HOST=209.38.211.128
+      - DB_PORT=3306
+      - DB_NAME=cartlow_dev
+      - DB_USER=sohaib
+      - DB_PASS=SoHeyhy@20ZZwaN@2023
+    volumes:
+      - ./reports:/app/reports
+    command: >
+      python -m pytest
+        "tests/e2e checkout/test_all_channels_e2e.py"
+        -v --html=reports/e2e_report.html --self-contained-html
+
+  # ── Run only payment method tests ─────────────────────────────────────────
+  playwright-payments:
+    build: .
+    container_name: cartlow-payments
+    environment:
+      - BASE_URL=${BASE_URL:-https://stage.cartlow.com/uae/en}
+      - DB_HOST=209.38.211.128
+    volumes:
+      - ./reports:/app/reports
+    command: >
+      python -m pytest
+        "tests/test payment method/"
+        -v --html=reports/payment_report.html --self-contained-html

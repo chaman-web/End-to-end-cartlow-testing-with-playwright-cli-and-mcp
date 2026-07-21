@@ -1,7 +1,6 @@
 pipeline {
     agent any
 
-    // ── Auto-trigger on every GitHub push ────────────────────────────────────
     triggers {
         githubPush()
     }
@@ -14,11 +13,10 @@ pipeline {
                 'auth -- Login & Registration Tests',
                 'e2e_staging -- E2E Checkout (Stage)',
                 'e2e_stage2 -- E2E Checkout (Stage2)',
-                'e2e_intl -- E2E INTL Checkout',
+                'payment_methods -- All Payment Methods',
                 'payment_uae -- Payment Methods UAE',
                 'payment_ksa -- Payment Methods KSA',
                 'payment_intl -- Payment Methods INTL',
-                'payment_methods -- All Payment Methods',
                 'nav_links -- Navigation Link Checker'
             ],
             description: 'Select which test suite to run'
@@ -26,12 +24,17 @@ pipeline {
         choice(
             name: 'BROWSER',
             choices: ['chromium', 'firefox', 'chromium firefox'],
-            description: 'Browser to run tests on'
+            description: 'Browser to use'
         )
         choice(
             name: 'ENV',
             choices: ['staging', 'stage2'],
-            description: 'Environment: staging = stage.cartlow.com, stage2 = stage2.cartlow.com'
+            description: 'staging = stage.cartlow.com | stage2 = stage2.cartlow.com'
+        )
+        booleanParam(
+            name: 'USE_DOCKER',
+            defaultValue: true,
+            description: 'Run tests inside Docker container'
         )
     }
 
@@ -43,6 +46,7 @@ pipeline {
         DB_USER          = 'sohaib'
         DB_PASS          = 'SoHeyhy@20ZZwaN@2023'
         PYTHONUNBUFFERED = '1'
+        IMAGE_NAME       = 'cartlow-playwright'
     }
 
     stages {
@@ -50,37 +54,37 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 checkout scm
-                echo "Branch: ${env.GIT_BRANCH}"
-                echo "Commit: ${env.GIT_COMMIT}"
+                echo "Branch: ${env.GIT_BRANCH} | Commit: ${env.GIT_COMMIT}"
             }
         }
 
-        stage('Setup Python Environment') {
+        stage('Build Docker Image') {
+            when {
+                expression { return params.USE_DOCKER }
+            }
+            steps {
+                bat "docker build -t ${env.IMAGE_NAME} ."
+            }
+        }
+
+        stage('Setup Python (No Docker)') {
+            when {
+                expression { return !params.USE_DOCKER }
+            }
             steps {
                 bat '''
                     python -m venv .venv
                     .venv\\Scripts\\pip install --upgrade pip
                     .venv\\Scripts\\pip install -r requirements.txt
+                    .venv\\Scripts\\playwright install chromium firefox
                 '''
-            }
-        }
-
-        stage('Install Playwright Browsers') {
-            steps {
-                bat '.venv\\Scripts\\playwright install chromium firefox'
             }
         }
 
         stage('Run Tests') {
             steps {
                 script {
-                    // On auto push → run ALL tests
-                    // On manual trigger → use selected suite
-                    def suite = 'all'
-                    if (params.TEST_SUITE) {
-                        suite = params.TEST_SUITE.split(' ')[0]
-                    }
-
+                    def suite = params.TEST_SUITE ? params.TEST_SUITE.split(' ')[0] : 'all'
                     def browsers = params.BROWSER == 'chromium firefox'
                         ? '--browser chromium --browser firefox'
                         : "--browser ${params.BROWSER ?: 'chromium'}"
@@ -95,9 +99,6 @@ pipeline {
                             break
                         case 'e2e_stage2':
                             testPath = '"tests/e2e checkout/test_all_channels_e2e_stage2.py"'
-                            break
-                        case 'e2e_intl':
-                            testPath = '"tests/e2e checkout/test_e2e_intl_checkout.py"'
                             break
                         case 'payment_uae':
                             testPath = '"tests/test payment method/test_payment_method_uae.py"'
@@ -116,29 +117,45 @@ pipeline {
                             break
                         case 'all':
                         default:
-                            testPath = '"tests/auth module testing/test_login.py" ' +
-                                       '"tests/auth module testing/test_registration_positive.py" ' +
-                                       '"tests/e2e checkout/test_all_channels_e2e.py" ' +
-                                       '"tests/test payment method"'
+                            testPath = '"tests/auth module testing/test_login.py" "tests/e2e checkout/test_all_channels_e2e.py" "tests/test payment method"'
                             break
                     }
 
-                    bat """
-                        set BASE_URL=${env.BASE_URL}
-                        set DB_HOST=${env.DB_HOST}
-                        set DB_PORT=${env.DB_PORT}
-                        set DB_NAME=${env.DB_NAME}
-                        set DB_USER=${env.DB_USER}
-                        set DB_PASS=${env.DB_PASS}
-                        .venv\\Scripts\\pytest ${testPath} ^
-                            ${browsers} ^
-                            -v ^
-                            --tb=short ^
-                            --html=reports/jenkins_report.html ^
-                            --self-contained-html ^
-                            --junit-xml=reports/results.xml ^
-                            || exit 0
-                    """
+                    if (params.USE_DOCKER) {
+                        bat """
+                            docker run --rm ^
+                                -e BASE_URL=${env.BASE_URL} ^
+                                -e DB_HOST=${env.DB_HOST} ^
+                                -e DB_PORT=${env.DB_PORT} ^
+                                -e DB_NAME=${env.DB_NAME} ^
+                                -e DB_USER=${env.DB_USER} ^
+                                -e DB_PASS=${env.DB_PASS} ^
+                                -v %cd%/reports:/app/reports ^
+                                ${env.IMAGE_NAME} ^
+                                python -m pytest ${testPath} ^
+                                    ${browsers} ^
+                                    -v ^
+                                    --tb=short ^
+                                    --html=reports/jenkins_report.html ^
+                                    --self-contained-html ^
+                                    --junit-xml=reports/results.xml ^
+                                || exit 0
+                        """
+                    } else {
+                        bat """
+                            set BASE_URL=${env.BASE_URL}
+                            set DB_HOST=${env.DB_HOST}
+                            set DB_PASS=${env.DB_PASS}
+                            .venv\\Scripts\\pytest ${testPath} ^
+                                ${browsers} ^
+                                -v ^
+                                --tb=short ^
+                                --html=reports/jenkins_report.html ^
+                                --self-contained-html ^
+                                --junit-xml=reports/results.xml ^
+                                || exit 0
+                        """
+                    }
                 }
             }
         }
@@ -146,7 +163,6 @@ pipeline {
 
     post {
         always {
-            // HTML Report
             publishHTML(target: [
                 allowMissing: true,
                 alwaysLinkToLastBuild: true,
@@ -155,31 +171,12 @@ pipeline {
                 reportFiles: 'jenkins_report.html',
                 reportName: 'Playwright Test Report'
             ])
-
-            // JUnit XML for Jenkins test summary
             junit allowEmptyResults: true, testResults: 'reports/results.xml'
-
-            // Archive reports
             archiveArtifacts artifacts: 'reports/**/*', allowEmptyArchive: true
-
-            echo """
-            ==========================================
-            Build:  #${env.BUILD_NUMBER}
-            Branch: ${env.GIT_BRANCH}
-            Commit: ${env.GIT_COMMIT}
-            Status: ${currentBuild.currentResult}
-            Report: ${env.BUILD_URL}Playwright_20Test_20Report
-            ==========================================
-            """
+            echo "Build #${env.BUILD_NUMBER} | ${currentBuild.currentResult} | Report: ${env.BUILD_URL}Playwright_20Test_20Report"
         }
-        success {
-            echo '✅ All tests PASSED!'
-        }
-        unstable {
-            echo '⚠️  Some tests FAILED — check the report.'
-        }
-        failure {
-            echo '❌ Pipeline FAILED — check console output.'
-        }
+        success { echo '✅ All tests PASSED!' }
+        unstable { echo '⚠️  Some tests FAILED — check report.' }
+        failure { echo '❌ Pipeline FAILED — check console.' }
     }
 }

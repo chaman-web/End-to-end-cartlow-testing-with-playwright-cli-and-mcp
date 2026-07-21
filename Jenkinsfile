@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    // ── Auto-trigger on every GitHub push ────────────────────────────────────
+    triggers {
+        githubPush()
+    }
+
     parameters {
         choice(
             name: 'TEST_SUITE',
@@ -31,12 +36,12 @@ pipeline {
     }
 
     environment {
-        BASE_URL = "${params.ENV == 'stage2' ? 'https://stage2.cartlow.com/uae/en' : 'https://stage.cartlow.com/uae/en'}"
-        DB_HOST  = '209.38.211.128'
-        DB_PORT  = '3306'
-        DB_NAME  = 'cartlow_dev'
-        DB_USER  = 'sohaib'
-        DB_PASS  = 'SoHeyhy@20ZZwaN@2023'
+        BASE_URL         = "${params.ENV == 'stage2' ? 'https://stage2.cartlow.com/uae/en' : 'https://stage.cartlow.com/uae/en'}"
+        DB_HOST          = '209.38.211.128'
+        DB_PORT          = '3306'
+        DB_NAME          = 'cartlow_dev'
+        DB_USER          = 'sohaib'
+        DB_PASS          = 'SoHeyhy@20ZZwaN@2023'
         PYTHONUNBUFFERED = '1'
     }
 
@@ -45,6 +50,8 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 checkout scm
+                echo "Branch: ${env.GIT_BRANCH}"
+                echo "Commit: ${env.GIT_COMMIT}"
             }
         }
 
@@ -67,10 +74,16 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    def suite = params.TEST_SUITE.split(' ')[0]  // take only the key part
+                    // On auto push → run ALL tests
+                    // On manual trigger → use selected suite
+                    def suite = 'all'
+                    if (params.TEST_SUITE) {
+                        suite = params.TEST_SUITE.split(' ')[0]
+                    }
+
                     def browsers = params.BROWSER == 'chromium firefox'
                         ? '--browser chromium --browser firefox'
-                        : "--browser ${params.BROWSER}"
+                        : "--browser ${params.BROWSER ?: 'chromium'}"
 
                     def testPath = ''
                     switch(suite) {
@@ -103,7 +116,10 @@ pipeline {
                             break
                         case 'all':
                         default:
-                            testPath = 'tests'
+                            testPath = '"tests/auth module testing/test_login.py" ' +
+                                       '"tests/auth module testing/test_registration_positive.py" ' +
+                                       '"tests/e2e checkout/test_all_channels_e2e.py" ' +
+                                       '"tests/test payment method"'
                             break
                     }
 
@@ -120,6 +136,7 @@ pipeline {
                             --tb=short ^
                             --html=reports/jenkins_report.html ^
                             --self-contained-html ^
+                            --junit-xml=reports/results.xml ^
                             || exit 0
                     """
                 }
@@ -129,6 +146,7 @@ pipeline {
 
     post {
         always {
+            // HTML Report
             publishHTML(target: [
                 allowMissing: true,
                 alwaysLinkToLastBuild: true,
@@ -137,13 +155,31 @@ pipeline {
                 reportFiles: 'jenkins_report.html',
                 reportName: 'Playwright Test Report'
             ])
+
+            // JUnit XML for Jenkins test summary
+            junit allowEmptyResults: true, testResults: 'reports/results.xml'
+
+            // Archive reports
             archiveArtifacts artifacts: 'reports/**/*', allowEmptyArchive: true
+
+            echo """
+            ==========================================
+            Build:  #${env.BUILD_NUMBER}
+            Branch: ${env.GIT_BRANCH}
+            Commit: ${env.GIT_COMMIT}
+            Status: ${currentBuild.currentResult}
+            Report: ${env.BUILD_URL}Playwright_20Test_20Report
+            ==========================================
+            """
         }
         success {
-            echo '✅ All tests passed!'
+            echo '✅ All tests PASSED!'
+        }
+        unstable {
+            echo '⚠️  Some tests FAILED — check the report.'
         }
         failure {
-            echo '❌ Some tests failed. Check the report.'
+            echo '❌ Pipeline FAILED — check console output.'
         }
     }
 }

@@ -52,7 +52,8 @@ def login(page: Page):
     page.locator("#login-email").fill(EMAIL)
     page.locator("#login-password").fill(PASSWORD)
     page.wait_for_timeout(500)
-    page.locator("button:has-text('Sign In')").first.click()
+    # Use JS click to bypass modal overlay blocking the button
+    page.evaluate("() => [...document.querySelectorAll('button')].find(b => b.innerText.trim() === 'Sign In' && b.offsetParent !== null)?.click()")
     page.wait_for_timeout(6000)
     print(f"✅ Logged in")
 

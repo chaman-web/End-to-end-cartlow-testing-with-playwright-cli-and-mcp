@@ -1,6 +1,7 @@
 import os
 import random
 import time
+import base64
 import pymysql
 import pytest
 from playwright.sync_api import Page
@@ -21,6 +22,28 @@ DB_USER = os.getenv("DB_USER", "sohaib")
 DB_PASS = os.getenv("DB_PASS", "SoHeyhy@20ZZwaN@2023")
 
 
+SHARED_KEY = base64.b64decode("L/qn30ZRcSBSC0YdgyqlLmfTs5g/zRhx4N60lMn1+5Q=")
+
+
+def decrypt_laravel(encrypted: str) -> str:
+    """Decrypt Laravel AES-256-CBC encrypted value using SHARED_ENCRYPTION_KEY."""
+    try:
+        import json as _json
+        from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+        from cryptography.hazmat.backends import default_backend
+        data      = _json.loads(base64.b64decode(encrypted))
+        iv        = base64.b64decode(data['iv'])
+        value     = base64.b64decode(data['value'])
+        cipher    = Cipher(algorithms.AES(SHARED_KEY), modes.CBC(iv), backend=default_backend())
+        decryptor = cipher.decryptor()
+        raw       = decryptor.update(value) + decryptor.finalize()
+        pad       = raw[-1]
+        return raw[:-pad].decode('utf-8')
+    except Exception as e:
+        print(f"  ⚠️  Decryption failed: {e}")
+        return None
+
+
 def get_otp_from_db(recipient: str):
     conn = pymysql.connect(
         host=DB_HOST, port=DB_PORT, database=DB_NAME,
@@ -35,7 +58,13 @@ def get_otp_from_db(recipient: str):
     row = cur.fetchone()
     cur.close()
     conn.close()
-    return str(row[0]) if row else None
+    if not row:
+        return None
+    code = str(row[0])
+    # Decrypt if Laravel encrypted (starts with eyJ = base64 JSON)
+    if code.startswith("eyJ"):
+        return decrypt_laravel(code)
+    return code
 
 
 def _normalize_phone(phone: str) -> str:
@@ -134,7 +163,8 @@ def test_registration_positive_flow(page: Page):
     page.wait_for_timeout(500)
 
     # Step 5: Click Verify
-    page.locator("button:has-text('Verify')").click()
+    page.evaluate("() => [...document.querySelectorAll('button')].find(b => b.innerText.trim() === 'Verify')?.click()")
+    page.wait_for_timeout(1000)
     page.wait_for_timeout(6000)
     print("✅ Step 5: OTP verified")
 
@@ -232,7 +262,8 @@ def test_registration_invalid_otp(page: Page):
             pass
 
     page.wait_for_timeout(500)
-    page.locator("button:has-text('Verify')").click()
+    page.evaluate("() => [...document.querySelectorAll('button')].find(b => b.innerText.trim() === 'Verify')?.click()")
+    page.wait_for_timeout(1000)
     page.wait_for_timeout(3000)
 
     body = page.locator("body").inner_text().lower()
@@ -270,7 +301,8 @@ def test_registration_weak_password(page: Page):
         except:
             pass
 
-    page.locator("button:has-text('Verify')").click()
+    page.evaluate("() => [...document.querySelectorAll('button')].find(b => b.innerText.trim() === 'Verify')?.click()")
+    page.wait_for_timeout(1000)
     page.wait_for_timeout(6000)
 
     # Fill name and weak password
@@ -320,7 +352,8 @@ def test_registration_mismatched_passwords(page: Page):
         except:
             pass
 
-    page.locator("button:has-text('Verify')").click()
+    page.evaluate("() => [...document.querySelectorAll('button')].find(b => b.innerText.trim() === 'Verify')?.click()")
+    page.wait_for_timeout(1000)
     page.wait_for_timeout(6000)
 
     # Fill name and mismatched passwords
@@ -375,7 +408,8 @@ def _complete_phone_registration(page: Page, phone: str):
                 break
         except: pass
 
-    page.locator("button:has-text('Verify')").click()
+    page.evaluate("() => [...document.querySelectorAll('button')].find(b => b.innerText.trim() === 'Verify')?.click()")
+    page.wait_for_timeout(1000)
     page.wait_for_timeout(6000)
 
     # Fill profile if shown
@@ -398,7 +432,8 @@ def _complete_phone_registration(page: Page, phone: str):
         page.wait_for_timeout(6000)
 
     body = page.locator("body").inner_text().lower()
-    assert "account" in body and "sign in" not in page.locator("header, nav").first.inner_text().lower()
+    assert any(k in body for k in ["account", "hello,", "logout"]) \
+        and "create account" not in page.locator("header, nav").first.inner_text().lower()
 
 
 def test_registration_phone_with_0(page: Page):

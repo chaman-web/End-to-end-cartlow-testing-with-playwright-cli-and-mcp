@@ -328,8 +328,8 @@ div.media {
   </head>
   <body>
     <h1 id="title">report.html</h1>
-    <p>Report generated on 06-May-2026 at 17:49:38 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a>
-        v4.1.1</p>
+    <p>Report generated on 22-Jul-2026 at 03:40:31 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a>
+        v4.2.0</p>
     <div id="environment-header">
       <h2>Environment</h2>
     </div>
@@ -344,8 +344,9 @@ div.media {
     <template id="template_results-table__body--empty">
       <tbody class="results-table-row">
         <tr id="not-found-message">
-          <td colspan="4">No results found. Check the filters.</th>
+          <td colspan="4">No results found. Check the filters.</td>
         </tr>
+      </tbody>
     </template>
     <template id="template_results-table__tbody">
       <tbody class="results-table-row">
@@ -356,14 +357,14 @@ div.media {
             <div class="extraHTML"></div>
             <div class="media">
               <div class="media-container">
-                  <div class="media-container__nav--left"><</div>
+                  <div class="media-container__nav--left">&lt;</div>
                   <div class="media-container__viewport">
                     <img src="" />
                     <video controls>
                       <source src="" type="video/mp4">
                     </video>
                   </div>
-                  <div class="media-container__nav--right">></div>
+                  <div class="media-container__nav--right">&gt;</div>
                 </div>
                 <div class="media__name"></div>
                 <div class="media__counter"></div>
@@ -382,7 +383,7 @@ div.media {
         <h2>Summary</h2>
         <div class="additional-summary prefix">
         </div>
-        <p class="run-count">1 test took 00:00:37.</p>
+        <p class="run-count">1 test took 00:04:09.</p>
         <p class="filter">(Un)check the boxes to filter the results.</p>
         <div class="summary__reload">
           <div class="summary__reload__button hidden" onclick="location.reload()">
@@ -392,20 +393,22 @@ div.media {
         <div class="summary__spacer"></div>
         <div class="controls">
           <div class="filters">
-            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="failed" disabled/>
-            <span class="failed">0 Failed,</span>
-            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="passed" />
-            <span class="passed">1 Passed,</span>
-            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="skipped" disabled/>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="failed" >
+            <span class="failed">1 Failed,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="passed" disabled>
+            <span class="passed">0 Passed,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="skipped" disabled>
             <span class="skipped">0 Skipped,</span>
-            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xfailed" disabled/>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xfailed" disabled>
             <span class="xfailed">0 Expected failures,</span>
-            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xpassed" disabled/>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xpassed" disabled>
             <span class="xpassed">0 Unexpected passes,</span>
-            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="error" disabled/>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="error" disabled>
             <span class="error">0 Errors,</span>
-            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="rerun" disabled/>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="rerun" disabled>
             <span class="rerun">0 Reruns</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="retried" disabled>
+            <span class="retried">0 Retried,</span>
           </div>
           <div class="collapse">
             <button id="show_all_details">Show all details</button>&nbsp;/&nbsp;<button id="hide_all_details">Hide all details</button>
@@ -427,9 +430,8 @@ div.media {
         </tr>
       </thead>
     </table>
-  </body>
   <footer>
-    <div id="data-container" data-jsonblob="{&#34;environment&#34;: {&#34;Python&#34;: &#34;3.12.3&#34;, &#34;Platform&#34;: &#34;Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39&#34;, &#34;Packages&#34;: {&#34;pytest&#34;: &#34;9.0.3&#34;, &#34;pluggy&#34;: &#34;1.6.0&#34;}, &#34;Plugins&#34;: {&#34;base-url&#34;: &#34;2.1.0&#34;, &#34;html&#34;: &#34;4.1.1&#34;, &#34;metadata&#34;: &#34;3.1.1&#34;, &#34;playwright&#34;: &#34;0.7.2&#34;}, &#34;Base URL&#34;: &#34;&#34;}, &#34;tests&#34;: {&#34;tests/auth module testing/test_inspect.py::test_inspect_registration_form[chromium]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/auth module testing/test_inspect.py::test_inspect_registration_form[chromium]&#34;, &#34;duration&#34;: &#34;00:00:37&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/auth module testing/test_inspect.py::test_inspect_registration_form[chromium]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:37&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;No log output captured.&#34;}]}, &#34;renderCollapsed&#34;: [&#34;passed&#34;], &#34;initialSort&#34;: &#34;result&#34;, &#34;title&#34;: &#34;report.html&#34;}"></div>
+    <div id="data-container" data-jsonblob="{&#34;environment&#34;: {&#34;Python&#34;: &#34;3.12.13&#34;, &#34;Platform&#34;: &#34;Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.41&#34;, &#34;Packages&#34;: {&#34;pytest&#34;: &#34;9.1.1&#34;, &#34;pluggy&#34;: &#34;1.6.0&#34;}, &#34;Plugins&#34;: {&#34;xdist&#34;: &#34;3.8.0&#34;, &#34;playwright&#34;: &#34;0.8.0&#34;, &#34;metadata&#34;: &#34;3.1.1&#34;, &#34;html&#34;: &#34;4.2.0&#34;, &#34;base-url&#34;: &#34;2.1.0&#34;}, &#34;Base URL&#34;: &#34;&#34;}, &#34;tests&#34;: {&#34;tests/e2e checkout/test_all_channels_e2e.py::test_e2e_uae_checkout[chromium]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;tests/e2e checkout/test_all_channels_e2e.py::test_e2e_uae_checkout[chromium]&#34;, &#34;duration&#34;: &#34;00:04:12&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/e2e checkout/test_all_channels_e2e.py::test_e2e_uae_checkout[chromium]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:04:12&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;page = &amp;lt;Page url=&amp;#x27;https://uae.checkout.paymob.com/?publicKey=are_pk_test_hWTsEnnkLO9a4n0B6BTOxHlXhfBFAYRS&amp;amp;clientSecret=are_csk_test_5bae3819333da8236cbe333aba38af20&amp;#x27;&amp;gt;\n\n    def test_e2e_uae_checkout(page: Page):\n        &amp;quot;&amp;quot;&amp;quot;Full E2E checkout on UAE channel.&amp;quot;&amp;quot;&amp;quot;\n        page.set_viewport_size({&amp;quot;width&amp;quot;: 1280, &amp;quot;height&amp;quot;: 800})\n        login(page)\n        add_product_to_cart(page, BASE_URL)\n        go_to_checkout(page, BASE_URL)\n        apply_coupon(page)\n        place_order(page)\n&amp;gt;       handle_payment_gateway(page)\n\ntests/e2e checkout/test_all_channels_e2e.py:380: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntests/e2e checkout/test_all_channels_e2e.py:367: in handle_payment_gateway\n    wait_for_success(page)\ntests/e2e checkout/test_all_channels_e2e.py:272: in wait_for_success\n    page.wait_for_url(&amp;quot;**/stage.cartlow.com/**&amp;quot;, timeout=90000)\n/usr/local/lib/python3.12/site-packages/playwright/sync_api/_generated.py:9924: in wait_for_url\n    self._sync(\n/usr/local/lib/python3.12/site-packages/playwright/_impl/_page.py:588: in wait_for_url\n    return await self._main_frame.wait_for_url(**locals_to_params(locals()))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/usr/local/lib/python3.12/site-packages/playwright/_impl/_frame.py:288: in wait_for_url\n    async with self.expect_navigation(\n/usr/local/lib/python3.12/site-packages/playwright/_impl/_event_context_manager.py:33: in __aexit__\n    await self._future\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\n    async def continuation() -&amp;gt; Optional[Response]:\n&amp;gt;       event = await waiter.result()\n                ^^^^^^^^^^^^^^^^^^^^^\nE       playwright._impl._errors.TimeoutError: Timeout 90000ms exceeded.\nE       =========================== logs ===========================\nE       waiting for navigation to &amp;quot;**/stage.cartlow.com/**&amp;quot; until &amp;#x27;load&amp;#x27;\nE       ============================================================\n\n/usr/local/lib/python3.12/site-packages/playwright/_impl/_frame.py:264: TimeoutError\n\n----------------------------- Captured stdout call -----------------------------\n\u2705 Logged in\n\u2705 Added: Apple iPhone 12 256GB - Blue\n\u2705 Checkout \u2014 https://stage.cartlow.com/uae/en/checkout/onepage\n\u2705 Coupon &amp;#x27;welcome10&amp;#x27; applied\n\u2705 Place Order \u2192 https://stage.cartlow.com/uae/en/checkout/onepage\n\ud83d\udcb3 Gateway: https://stage.cartlow.com/uae/en/checkout/onepage\n  Auth filled (frame: https://uae.checkout.paymob.com/?publicKey=are_pk_test_hWTsE)\n  Auth submitted via Enter\n&#34;}]}, &#34;renderCollapsed&#34;: [&#34;passed&#34;], &#34;initialSort&#34;: &#34;result&#34;, &#34;title&#34;: &#34;report.html&#34;}"></div>
     <script>
       (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const { getCollapsedCategory, setCollapsedIds } = require('./storage.js')
@@ -557,10 +559,10 @@ const dom = {
         }
 
         if (collapsed) {
-            resultBody.querySelector('.collapsible > td')?.classList.add('collapsed')
+            resultBody.querySelector('.collapsible > .col-result')?.classList.add('collapsed')
             resultBody.querySelector('.extras-row').classList.add('hidden')
         } else {
-            resultBody.querySelector('.collapsible > td')?.classList.remove('collapsed')
+            resultBody.querySelector('.collapsible > .col-result')?.classList.remove('collapsed')
         }
 
         const media = []
@@ -1088,4 +1090,5 @@ module.exports = {
 },{}]},{},[4]);
     </script>
   </footer>
+  </body>
 </html>

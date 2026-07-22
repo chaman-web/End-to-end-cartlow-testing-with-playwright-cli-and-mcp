@@ -19,9 +19,9 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Playwright browsers
-RUN playwright install chromium firefox
-RUN playwright install-deps chromium firefox
+# Install Playwright browsers using Python module
+RUN python -m playwright install chromium firefox
+RUN python -m playwright install-deps chromium firefox
 
 # Copy all project files
 COPY . .

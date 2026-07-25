@@ -36,7 +36,7 @@ def login(page: Page):
     page.locator("#login-email").fill(EMAIL)
     page.locator("#login-password").fill(PASSWORD)
     page.wait_for_timeout(500)
-    page.locator("button:has-text('Sign In')").first.click()
+    page.evaluate("() => [...document.querySelectorAll('button')].find(b => b.innerText.trim() === 'Sign In' && b.offsetParent !== null)?.click()")
     page.wait_for_timeout(6000)
     print("✅ Logged in")
 
@@ -104,9 +104,13 @@ def detect_payment_methods(page: Page) -> list[dict]:
 
 
 def select_payment_method(page: Page, method_id: str):
-    page.evaluate(f"document.getElementById('{method_id}').click()")
-    page.wait_for_timeout(1000)
-    assert page.evaluate(f"document.getElementById('{method_id}').checked"), \
+    for _ in range(3):
+        page.evaluate(f"document.getElementById('{method_id}')?.click()")
+        page.wait_for_timeout(1000)
+        if page.evaluate(f"document.getElementById('{method_id}')?.checked"):
+            return
+        page.wait_for_timeout(1000)
+    assert page.evaluate(f"document.getElementById('{method_id}')?.checked"), \
         f"Payment method '{method_id}' was not selected"
 
 
@@ -336,5 +340,5 @@ def test_all_payment_methods(page: Page):
         lbl = next((m["label"] for m in methods if m["id"] == mid), mid)
         print(f"   {result} — {lbl}")
 
-    failed = [k for k, v in results.items() if "FAILED" in v]
+    failed = [k for k, v in results.items() if v.startswith("❌")]
     assert not failed, f"Failed payment methods: {failed}"

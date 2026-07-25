@@ -34,7 +34,7 @@ def login_and_switch_intl(page: Page):
     page.locator("#login-email").fill(EMAIL)
     page.locator("#login-password").fill(PASSWORD)
     page.wait_for_timeout(500)
-    page.locator("button:has-text('Sign In')").first.click()
+    page.evaluate("() => [...document.querySelectorAll('button')].find(b => b.innerText.trim() === 'Sign In' && b.offsetParent !== null)?.click()")
     page.wait_for_timeout(6000)
     print("✅ Logged in")
 
@@ -45,69 +45,91 @@ def login_and_switch_intl(page: Page):
     page.wait_for_timeout(8000)
     page.context.add_cookies([{"name": "__selected_country", "value": "intl", "domain": "stage.cartlow.com", "path": "/"}])
     page.goto(INTL_URL, wait_until="domcontentloaded")
-    page.wait_for_selector("a[href*='product-detail']", state="attached", timeout=20000)
-    page.wait_for_timeout(3000)
+    page.wait_for_timeout(8000)
     print("✅ Switched to INTL")
 
 
 def ensure_intl_cart_has_item(page: Page):
+    """Add a product to cart from INTL homepage listing."""
+    # Check if cart already has items
     page.goto(f"{INTL_URL}/checkout/cart", wait_until="domcontentloaded")
     page.wait_for_timeout(5000)
-    has_items = page.locator("a[href*='checkout/onepage']").count() > 0
-    if has_items:
+    if page.locator("a[href*='checkout/onepage'], button:has-text('Checkout')").count() > 0:
         print("  Cart has items ✅"); return
-    print("  Cart empty — adding product...")
-    page.goto(INTL_URL, wait_until="domcontentloaded")
-    page.wait_for_selector("a[href*='product-detail']", state="attached", timeout=20000)
-    page.wait_for_timeout(3000)
-    products = list(dict.fromkeys(page.evaluate(
-        "() => [...document.querySelectorAll('a[href*=product-detail]')].map(a => a.href)"
-    )))
-    import re
-    for link in products:
-        page.goto(link, wait_until="domcontentloaded")
-        page.wait_for_timeout(6000)
-        body = page.locator("body").inner_text()
-        prices = re.findall(r'\$\s*([\d.]+)', body)
-        if prices and float(prices[0]) < 1.0:
-            continue
-        if "View Cart" in body:
-            print(f"  In cart: {page.title()}"); return
-        # Scroll down to reveal Add to Cart button
+
+    print("  Cart empty — picking product from INTL homepage...")
+    page.context.add_cookies([{"name": "__selected_country", "value": "intl", "domain": "stage.cartlow.com", "path": "/"}])
+
+    # Go to INTL homepage — products already listed there
+    for attempt in range(3):
+        page.goto(INTL_URL, wait_until="domcontentloaded")
+        page.wait_for_timeout(8000)
+        # Scroll to trigger lazy-load of product cards
+        for _ in range(5):
+            page.mouse.wheel(0, 300)
+            page.wait_for_timeout(500)
+        # Wait for product cards to render (Vue SPA)
+        links = []
         for _ in range(15):
-            page.mouse.wheel(0, 200)
-            page.wait_for_timeout(300)
-        page.wait_for_timeout(1000)
+            links = page.evaluate("() => [...document.querySelectorAll('a[href*=product-detail]')].map(a => a.href)")
+            if links: break
+            page.wait_for_timeout(1000)
+        if links:
+            break
+        print(f"  Attempt {attempt+1}: no products yet, retrying...")
+
+    assert links, "No products found on INTL homepage after 3 attempts"
+    print(f"  Found {len(links)} products on homepage")
+
+    # Click the first product on the listing page
+    first_product = page.locator("a[href*='product-detail']").first
+    first_product.scroll_into_view_if_needed()
+    first_product.click()
+    page.wait_for_timeout(6000)
+    print(f"  PDP: {page.title()}")
+
+    # Scroll down to reveal Add to Cart button
+    for _ in range(15):
+        page.mouse.wheel(0, 150)
+        page.wait_for_timeout(200)
+
+    # Wait for Add to Cart button to appear
+    for _ in range(10):
         body = page.locator("body").inner_text()
-        if "View Cart" in body:
-            print(f"  In cart: {page.title()}"); return
-        # Try Add to Cart button first (visible after scroll)
-        for btn_text in ["Add To Cart", "Add to Cart"]:
-            btn = page.locator(f"button:has-text('{btn_text}')").first
-            if btn.count() and btn.is_visible():
-                btn.click(force=True)
-                page.wait_for_timeout(4000)
-                if "View Cart" in page.locator("body").inner_text():
-                    print(f"  Added: {page.title()}"); return
-        # Fallback: Keep it for Yourself
-        keep_btn = page.locator("div.cursor-pointer:has-text('Keep it for Yourself')").first
-        if keep_btn.count() and keep_btn.is_visible():
-            keep_btn.click()
-            page.wait_for_timeout(3000)
-            if "View Cart" in page.locator("body").inner_text():
-                print(f"  Added: {page.title()}"); return
+        if "Add To Cart" in body or "Add to Cart" in body or "View Cart" in body:
+            break
+        page.wait_for_timeout(1000)
+
+    body = page.locator("body").inner_text()
+    if "View Cart" in body:
+        print(f"  Already in cart")
+    else:
+        # Click Add to Cart
+        btn = page.locator("button:has-text('Add To Cart'), button:has-text('Add to Cart')").first
+        btn.wait_for(state="visible", timeout=10000)
+        btn.click(force=True)
+        page.wait_for_timeout(3000)
+        print(f"  Clicked Add to Cart")
+
+    # Wait for View Cart to appear
+    for _ in range(10):
+        if "View Cart" in page.locator("body").inner_text(): break
+        page.wait_for_timeout(1000)
+
+    # Click View Cart → redirects to cart page
+    page.locator("a:has-text('View Cart'), button:has-text('View Cart')").first.click()
+    page.wait_for_timeout(4000)
+    print(f"  ✅ On cart page: {page.url}")
 
 
 def go_to_intl_checkout(page: Page):
+    """Go to cart page and click Checkout button."""
+    ensure_intl_cart_has_item(page)
     page.goto(f"{INTL_URL}/checkout/cart", wait_until="domcontentloaded")
     page.wait_for_timeout(5000)
-    # Use the visible Checkout link (last one is the visible one)
-    links = page.locator("a[href*='checkout/onepage']")
-    if links.count() > 0:
-        links.last.click()
-    else:
-        # Direct navigation fallback
-        page.goto(f"{INTL_URL}/checkout/onepage", wait_until="domcontentloaded")
+    checkout = page.locator("a[href*='checkout/onepage'], a:has-text('Checkout'), button:has-text('Checkout')").last
+    checkout.scroll_into_view_if_needed()
+    checkout.click()
     page.wait_for_timeout(8000)
     assert "onepage" in page.url, f"Expected checkout page, got: {page.url}"
 

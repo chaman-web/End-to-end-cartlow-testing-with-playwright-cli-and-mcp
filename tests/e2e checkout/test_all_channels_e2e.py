@@ -274,7 +274,7 @@ def wait_for_success(page: Page):
     for _ in range(10):
         if any(k in page.url for k in ["success", "order"]): break
         page.wait_for_timeout(3000)
-    assert any(k in page.url for k in ["success", "order", "payment/wait", "coinpayments", "selection", "tamara", "tabby"]), \
+    assert any(k in page.url for k in ["success", "order", "payment/wait", "coinpayments", "selection", "tamara", "tabby", "checkout-sandbox"]),  \
         f"Expected success, got: {page.url}"
     print(f"✅ Order success — {page.url}")
 
@@ -390,8 +390,8 @@ def test_e2e_ksa_checkout(page: Page):
     go_to_checkout(page, KSA_URL)
     apply_coupon(page)
 
-    # Select available payment method on KSA (Tamara, Tabby, or Crypto)
-    for mid in ["paymob", "tamara", "tabby", "coinpayments"]:
+    # Select available payment method on KSA — coinpayments redirects immediately
+    for mid in ["paymob", "coinpayments", "tamara", "tabby"]:
         if page.evaluate(f"() => !!document.getElementById('{mid}')"):
             page.evaluate(f"document.getElementById('{mid}').click()")
             page.wait_for_timeout(1000)

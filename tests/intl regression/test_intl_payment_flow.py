@@ -4,17 +4,14 @@ TC IDs: CHK-038 to CHK-042
 Tests successful payment, declined payment, cancelled payment,
 payment timeout, and network interruption scenarios.
 """
-
 import pytest
 from playwright.sync_api import Page, Browser, Route
+from tests.helpers import (
+    login_and_switch_intl, ensure_cart_has_item,
+    INTL_URL, CART_URL, PDP_URL
+)
 
-BASE_URL      = "https://stage.cartlow.com/uae/en"
-INTL_URL      = "https://stage.cartlow.com/intl/en"
 CHECKOUT_URL  = f"{INTL_URL}/checkout/onepage"
-CART_URL      = f"{INTL_URL}/checkout/cart"
-PDP_URL       = "https://stage.cartlow.com/intl/en/gift-cards/nintendo?mpid=10740946&vid=19079930003&type=digital"
-EMAIL         = "muhammad.akmal@cartlow.com"
-PASSWORD      = "Test!123"
 CHECKOUT_CARD = "4242424242424242"    # Checkout.com success card
 DECLINED_CARD = "4000000000000002"    # Generic decline card
 EXPIRY        = "1133"
@@ -22,97 +19,6 @@ EXPIRY_SLASH  = "11/33"
 CVV           = "123"
 CARDHOLDER    = "Test"
 BANK_PASSWORD = "Checkout1!"
-
-
-# ── Helpers ───────────────────────────────────────────────────────────────────
-
-def login_and_switch_intl(page: Page):
-    page.goto(BASE_URL, wait_until="domcontentloaded")
-    page.wait_for_timeout(10000)
-    for _ in range(15):
-        try:
-            page.evaluate(
-                "document.querySelector('#app').__vue_app__.config.globalProperties"
-                ".$emitter.emit('open-customer-auth-modal')"
-            )
-            page.locator("#login-email").wait_for(state="visible", timeout=3000)
-            page.wait_for_timeout(500)
-            page.locator("#login-email").evaluate("el => el.focus()")
-            if page.locator("#login-email").evaluate("el => document.activeElement === el"):
-                break
-        except:
-            page.wait_for_timeout(1500)
-    page.locator("#login-email").fill(EMAIL)
-    page.locator("#login-password").fill(PASSWORD)
-    page.wait_for_timeout(500)
-    page.evaluate(
-        "() => [...document.querySelectorAll('button')]"
-        ".find(b => b.innerText.trim() === 'Sign In' && b.offsetParent !== null)?.click()"
-    )
-    page.wait_for_timeout(6000)
-    print("✅ Logged in")
-
-    page.evaluate(
-        "() => [...document.querySelectorAll('button')].find(b => b.innerText.includes('UAE'))?.click()"
-    )
-    page.wait_for_timeout(2000)
-    page.evaluate(
-        "() => [...document.querySelectorAll('span,div,li')]"
-        ".find(e => e.innerText.trim() === 'INTL' && e.offsetParent)?.click()"
-    )
-    page.wait_for_timeout(8000)
-    page.context.add_cookies([
-        {"name": "__selected_country", "value": "intl",
-         "domain": "stage.cartlow.com", "path": "/"}
-    ])
-    print("✅ Switched to INTL")
-
-
-def ensure_cart_has_item(page: Page):
-    page.goto(CART_URL, wait_until="domcontentloaded")
-    page.wait_for_timeout(5000)
-    body = page.locator("body").inner_text()
-    has_checkout = page.locator("a[href*='checkout/onepage'], button:has-text('Checkout')").count() > 0
-    if has_checkout and "empty" not in body.lower():
-        return
-
-    # Cart is empty — add the item from PDP
-    print("   Cart empty — adding item from PDP...")
-    page.goto(PDP_URL, wait_until="domcontentloaded")
-    page.wait_for_timeout(8000)
-
-    # Scroll down to reveal Add to Cart
-    for _ in range(15):
-        page.mouse.wheel(0, 200)
-        page.wait_for_timeout(200)
-    page.wait_for_timeout(1000)
-
-    # Wait for Add to Cart button
-    for _ in range(10):
-        body = page.locator("body").inner_text()
-        if "Add To Cart" in body or "Add to Cart" in body or "View Cart" in body:
-            break
-        page.wait_for_timeout(1000)
-
-    body = page.locator("body").inner_text()
-    if "View Cart" not in body:
-        btn = page.locator("button:has-text('Add To Cart'), button:has-text('Add to Cart')").first
-        btn.wait_for(state="visible", timeout=10000)
-        btn.click(force=True)
-        page.wait_for_timeout(4000)
-
-    # Confirm View Cart appears
-    for _ in range(10):
-        if "View Cart" in page.locator("body").inner_text():
-            break
-        page.wait_for_timeout(1000)
-
-    # Navigate directly to cart page and verify
-    page.goto(CART_URL, wait_until="domcontentloaded")
-    page.wait_for_timeout(5000)
-    assert page.locator("a[href*='checkout/onepage'], button:has-text('Checkout')").count() > 0, \
-        "Cart still empty after attempting to add item"
-    print("✅ Cart ready")
 
 
 def go_to_checkout(page: Page):

@@ -1,0 +1,40 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /mnt/c/Users/akmal/OneDrive/Desktop/playwright cli/.venv/bin/python3
+cachedir: .pytest_cache
+metadata: {'Python': '3.12.3', 'Platform': 'Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39', 'Packages': {'pytest': '9.0.3', 'pluggy': '1.6.0'}, 'Plugins': {'base-url': '2.1.0', 'html': '4.1.1', 'metadata': '3.1.1', 'playwright': '0.7.2', 'xdist': '3.6.1'}, 'Base URL': ''}
+rootdir: /mnt/c/Users/akmal/OneDrive/Desktop/playwright cli
+configfile: pytest.ini
+plugins: base-url-2.1.0, html-4.1.1, metadata-3.1.1, playwright-0.7.2, xdist-3.6.1
+created: 5/5 workers
+5 workers [13 items]
+
+scheduling tests via LoadFileScheduling
+
+tests/intl regression/test_intl_gift_card_pdp.py::test_gc_006_gift_it_add_to_cart_with_email[chromium] 
+[gw0] [  7%] PASSED tests/intl regression/test_intl_gift_card_pdp.py::test_gc_006_gift_it_add_to_cart_with_email[chromium] 
+tests/intl regression/test_intl_gift_card_pdp.py::test_gc_007_gift_it_add_to_cart_with_mobile[chromium] 
+[gw0] [ 15%] PASSED tests/intl regression/test_intl_gift_card_pdp.py::test_gc_007_gift_it_add_to_cart_with_mobile[chromium] 
+tests/intl regression/test_intl_gift_card_pdp.py::test_gc_008_gift_it_message_is_optional[chromium] 
+[gw0] [ 23%] PASSED tests/intl regression/test_intl_gift_card_pdp.py::test_gc_008_gift_it_message_is_optional[chromium] 
+tests/intl regression/test_intl_gift_card_pdp.py::test_gc_009_gift_it_invalid_email_validation[chromium] 
+[gw0] [ 30%] PASSED tests/intl regression/test_intl_gift_card_pdp.py::test_gc_009_gift_it_invalid_email_validation[chromium] 
+tests/intl regression/test_intl_gift_card_pdp.py::test_gc_014_gift_it_recipient_shown_in_cart[chromium] 
+[gw0] [ 38%] PASSED tests/intl regression/test_intl_gift_card_pdp.py::test_gc_014_gift_it_recipient_shown_in_cart[chromium] 
+tests/intl regression/test_intl_gift_card_pdp.py::test_gc_015_recipient_name_required[chromium] 
+[gw0] [ 46%] PASSED tests/intl regression/test_intl_gift_card_pdp.py::test_gc_015_recipient_name_required[chromium] 
+tests/intl regression/test_intl_gift_card_pdp.py::test_gc_pdp_002_gift_it_option_available[chromium] 
+[gw0] [ 53%] PASSED tests/intl regression/test_intl_gift_card_pdp.py::test_gc_pdp_002_gift_it_option_available[chromium] 
+tests/intl regression/test_intl_gift_card_pdp.py::test_gc_pdp_003_only_one_option_selected_at_a_time[chromium] 
+[gw0] [ 61%] PASSED tests/intl regression/test_intl_gift_card_pdp.py::test_gc_pdp_003_only_one_option_selected_at_a_time[chromium] 
+tests/intl regression/test_intl_gift_card_pdp.py::test_gc_pdp_009_select_gift_it_shows_recipient_form[chromium] 
+[gw0] [ 69%] PASSED tests/intl regression/test_intl_gift_card_pdp.py::test_gc_pdp_009_select_gift_it_shows_recipient_form[chromium] 
+tests/intl regression/test_intl_gift_card_pdp.py::test_gc_pdp_011_recipient_email_mobile_field[chromium] 
+[gw0] [ 76%] PASSED tests/intl regression/test_intl_gift_card_pdp.py::test_gc_pdp_011_recipient_email_mobile_field[chromium] 
+tests/intl regression/test_intl_gift_card_pdp.py::test_gc_pdp_013_required_field_indicators[chromium] 
+[gw0] [ 84%] PASSED tests/intl regression/test_intl_gift_card_pdp.py::test_gc_pdp_013_required_field_indicators[chromium] 
+tests/intl regression/test_intl_gift_card_pdp.py::test_gc_pdp_015_valid_name_accepted[chromium] 
+[gw0] [ 92%] PASSED tests/intl regression/test_intl_gift_card_pdp.py::test_gc_pdp_015_valid_name_accepted[chromium] 
+tests/intl regression/test_intl_gift_card_pdp.py::test_gc_pdp_024_invalid_email_error[chromium] 
+[gw0] [100%] PASSED tests/intl regression/test_intl_gift_card_pdp.py::test_gc_pdp_024_invalid_email_error[chromium] 
+
+======================== 13 passed in 574.68s (0:09:34) ========================

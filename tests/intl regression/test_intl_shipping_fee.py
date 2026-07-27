@@ -7,68 +7,12 @@ Requires login + Nintendo $35 in cart (digital item).
 import re
 import pytest
 from playwright.sync_api import Page, Browser
+from tests.helpers import (
+    login_and_switch_intl, ensure_cart_has_item,
+    INTL_URL, CART_URL, PDP_URL
+)
 
-BASE_URL     = "https://stage.cartlow.com/uae/en"
-INTL_URL     = "https://stage.cartlow.com/intl/en"
 CHECKOUT_URL = f"{INTL_URL}/checkout/onepage"
-CART_URL     = f"{INTL_URL}/checkout/cart"
-PDP_URL      = "https://stage.cartlow.com/intl/en/gift-cards/nintendo?mpid=10740946&vid=19079930003&type=digital"
-EMAIL        = "muhammad.akmal@cartlow.com"
-PASSWORD     = "Test!123"
-
-
-# ── Helpers ────────────────────────────────────────────────────────────────────
-
-def login_and_switch_intl(page: Page):
-    page.goto(BASE_URL, wait_until="domcontentloaded")
-    page.wait_for_timeout(10000)
-    for _ in range(15):
-        try:
-            page.evaluate(
-                "document.querySelector('#app').__vue_app__.config.globalProperties"
-                ".$emitter.emit('open-customer-auth-modal')"
-            )
-            page.locator("#login-email").wait_for(state="visible", timeout=3000)
-            page.wait_for_timeout(500)
-            page.locator("#login-email").evaluate("el => el.focus()")
-            if page.locator("#login-email").evaluate("el => document.activeElement === el"):
-                break
-        except:
-            page.wait_for_timeout(1500)
-    page.locator("#login-email").fill(EMAIL)
-    page.locator("#login-password").fill(PASSWORD)
-    page.wait_for_timeout(500)
-    page.evaluate(
-        "() => [...document.querySelectorAll('button')]"
-        ".find(b => b.innerText.trim() === 'Sign In' && b.offsetParent !== null)?.click()"
-    )
-    page.wait_for_timeout(6000)
-    page.evaluate("() => [...document.querySelectorAll('button')].find(b => b.innerText.includes('UAE'))?.click()")
-    page.wait_for_timeout(2000)
-    page.evaluate("() => [...document.querySelectorAll('span,div,li')].find(e => e.innerText.trim() === 'INTL' && e.offsetParent)?.click()")
-    page.wait_for_timeout(8000)
-    page.context.add_cookies([
-        {"name": "__selected_country", "value": "intl",
-         "domain": "stage.cartlow.com", "path": "/"}
-    ])
-
-
-def ensure_cart_has_item(page: Page):
-    page.goto(CART_URL, wait_until="domcontentloaded")
-    page.wait_for_timeout(4000)
-    if "Nintendo" in page.locator("body").inner_text():
-        return
-    page.goto(PDP_URL, wait_until="domcontentloaded")
-    page.wait_for_timeout(8000)
-    for _ in range(15):
-        page.mouse.wheel(0, 200)
-        page.wait_for_timeout(200)
-    page.wait_for_timeout(1000)
-    page.evaluate(
-        "() => [...document.querySelectorAll('button,div,a')]"
-        ".find(e => /add.to.cart/i.test(e.innerText) && e.offsetParent)?.click()"
-    )
-    page.wait_for_timeout(4000)
 
 
 def get_amount(body: str, label: str) -> float:

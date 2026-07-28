@@ -1,6 +1,39 @@
+# Python
 .venv/
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+
+# Pytest
 .pytest_cache/
+.last_failed
+
+# Playwright
+test-results/
+playwright-report/
 videos/
+trace/
+
+# Auth state (contains session cookies — never commit)
+.auth_state.json
+
+# Environment secrets
+.env
+
+# Reports (generated at runtime)
+reports/screenshots/
+reports/*.html
+reports/*.log
+reports/*.xml
+
+# IDE
 .idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

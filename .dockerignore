@@ -1,11 +1,29 @@
-.venv
-__pycache__
+# Python
+.venv/
+__pycache__/
 *.pyc
 *.pyo
-.pytest_cache
-reports
-videos
-.git
+.pytest_cache/
+
+# Auth state — never bake session cookies into the image
+.auth_state.json
+
+# Secrets
+.env
+
+# Reports (generated at runtime, mounted as volume)
+reports/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
 .gitignore
-*.webm
-*.xlsx
+
+# Docs
+README.md
+*.md

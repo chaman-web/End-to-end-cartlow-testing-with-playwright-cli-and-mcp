@@ -2,22 +2,21 @@
 tests/helpers.py — Shared test helpers for Cartlow automation suite.
 
 Centralised here to avoid duplication across test modules.
-All test logic lives in individual test files — these are pure utilities.
+All URLs and credentials come from config.py — no hardcoded values here.
 """
 
 import re
 from playwright.sync_api import Page
+from config import Config
 
-# ── Constants ──────────────────────────────────────────────────────────────────
-BASE_URL = "https://stage.cartlow.com/uae/en"
-INTL_URL = "https://stage.cartlow.com/intl/en"
-CART_URL = f"{INTL_URL}/checkout/cart"
-PDP_URL  = (
-    "https://stage.cartlow.com/intl/en/gift-cards/nintendo"
-    "?mpid=10740946&vid=19079930003&type=digital"
-)
-EMAIL    = "muhammad.akmal@cartlow.com"
-PASSWORD = "Test!123"
+# ── Re-export constants so test files can import from one place ────────────────
+BASE_URL     = Config.BASE_URL
+INTL_URL     = Config.INTL_URL
+CART_URL     = Config.CART_URL
+CHECKOUT_URL = Config.CHECKOUT_URL
+PDP_URL      = Config.PDP_URL
+EMAIL        = Config.EMAIL
+PASSWORD     = Config.PASSWORD
 
 
 # ── Auth ───────────────────────────────────────────────────────────────────────
@@ -25,7 +24,7 @@ PASSWORD = "Test!123"
 def login_and_switch_intl(page: Page):
     """Full login + switch to INTL channel (used in module-scoped fixtures)."""
     page.goto(BASE_URL, wait_until="domcontentloaded")
-    page.wait_for_timeout(10000)
+    page.wait_for_timeout(Config.LONG_WAIT)
 
     for _ in range(15):
         try:
@@ -55,15 +54,15 @@ def login_and_switch_intl(page: Page):
         "() => [...document.querySelectorAll('button')]"
         ".find(b => b.innerText.includes('UAE'))?.click()"
     )
-    page.wait_for_timeout(2000)
+    page.wait_for_timeout(Config.SHORT_WAIT)
     page.evaluate(
         "() => [...document.querySelectorAll('span,div,li')]"
         ".find(e => e.innerText.trim() === 'INTL' && e.offsetParent)?.click()"
     )
-    page.wait_for_timeout(8000)
+    page.wait_for_timeout(Config.LONG_WAIT)
     page.context.add_cookies([{
         "name": "__selected_country", "value": "intl",
-        "domain": "stage.cartlow.com", "path": "/"
+        "domain": Config.DOMAIN, "path": "/"
     }])
 
 
@@ -78,7 +77,7 @@ def clear_cart(page: Page):
     page.goto(CART_URL, wait_until="domcontentloaded")
     page.wait_for_timeout(4000)
 
-    # Visible Remove button: span[role="button"][tabindex="0"] with SVG icon + "Remove" text
+    # Visible Remove button: span[role="button"][tabindex="0"] with "Remove" text
     remove_btn = page.locator('span[role="button"][tabindex="0"]:has-text("Remove")')
 
     if remove_btn.count() == 0:
@@ -115,7 +114,7 @@ def ensure_cart_has_item(page: Page):
 
     # Add from PDP
     page.goto(PDP_URL, wait_until="domcontentloaded")
-    page.wait_for_timeout(8000)
+    page.wait_for_timeout(Config.LONG_WAIT)
     for _ in range(15):
         page.mouse.wheel(0, 200)
         page.wait_for_timeout(200)
@@ -137,9 +136,9 @@ def ensure_cart_has_item(page: Page):
 
 def get_price(page: Page, label: str) -> float:
     """Extract dollar amount following a label in the cart/order summary."""
-    body = " ".join(page.locator("body").inner_text().split())
+    body    = " ".join(page.locator("body").inner_text().split())
     pattern = rf"{re.escape(label)}.*?\$\s*([\d,]+\.?\d*)"
-    match = re.search(pattern, body, re.IGNORECASE | re.DOTALL)
+    match   = re.search(pattern, body, re.IGNORECASE | re.DOTALL)
     if match:
         return float(match.group(1).replace(",", ""))
     return 0.0
